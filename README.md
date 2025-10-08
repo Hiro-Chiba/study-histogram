@@ -1,6 +1,7 @@
 # 学習ヒストグラム（Streamlit）
-学習項目の周回数をローカルJSONに保存し、棒グラフで可視化します。  
-※ `.data/progress.json` は Git 管理外（公開されません）
+
+学習項目の周回数をローカル JSON に保存し、カラー縦棒（||||）で一望表示します。  
+保存先: `progress.json`（ローカルのみ／公開リポジトリにはコミットしない想定）
 
 ## スクリーンショット
 ![screenshot](images/image.png)
@@ -8,9 +9,8 @@
 ## セットアップ
 ```bash
 python -m venv .venv
-source .venv/bin/activate  # Windowsは .venv\Scripts\activate
+# Windows
+.venv\Scripts\activate
+# macOS/Linux
+source .venv/bin/activate
 pip install -r requirements.txt
-streamlit run app.py
-
-## 起動方法
-streamlit run app.py
