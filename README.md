@@ -2,6 +2,9 @@
 学習項目の周回数をローカルJSONに保存し、棒グラフで可視化します。  
 ※ `.data/progress.json` は Git 管理外（公開されません）
 
+## スクリーンショット
+![screenshot](images/image.png)
+
 ## セットアップ
 ```bash
 python -m venv .venv

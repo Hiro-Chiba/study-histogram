@@ -43,23 +43,24 @@ st.markdown(
   .hbars{
     display:flex;
     flex-wrap:wrap;
-    gap:12px;                /* 隣の柱との間隔 */
-    align-items:flex-end;
+    gap:12px;                 /* 隣の柱との間隔 */
+    align-items:flex-end;     /* ★ 全ての柱の下端を揃える */
     border:1px solid var(--border);
     background:#FFFFFF;
     border-radius:12px;
     padding:12px 14px;
   }
   .col{
-    width:36px;              /* ★ 柱の太さ（24 → 36pxに拡大） */
+    width:36px;               /* 柱の太さ */
     display:flex;
     flex-direction:column;
     align-items:center;
+    justify-content:flex-end; /* ★ 下方向に詰めて高さ差を吸収 */
   }
   .tube{
     position:relative;
     width:100%;
-    height:200px;            /* ★ 最大高さ（120 → 200pxに拡大） */
+    height:200px;             /* 最大高さ */
     background:#edf2f7;
     border-radius:12px;
     overflow:hidden;
@@ -68,13 +69,16 @@ st.markdown(
     position:absolute; bottom:0; left:0;
     width:100%; height:0%;
     border-radius:12px;
+    transition:height .25s ease;
   }
-  .cnt{font-size:.78rem; color:var(--muted); margin-top:6px; line-height:1;}
-  .lbl{font-size:.74rem; color:#475569; line-height:1; margin-top:2px; text-align:center;}
+  /* ★ 数値とラベルで列の高さが変わらないよう固定高＋1行表示にする */
+  .cnt{font-size:.78rem; color:var(--muted); margin-top:6px; line-height:1; height:16px; display:flex; align-items:center; justify-content:center;}
+  .lbl{font-size:.74rem; color:#475569; line-height:1; height:14px; margin-top:2px; text-align:center;
+       white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
   .kpi{border:1px solid var(--border); background:var(--card); padding:.55rem .75rem; border-radius:10px; font-size:.95rem; margin-top:.7rem;}
 
   @media (max-width: 560px){
-    .col{width:32px}         /* モバイルは少し細め */
+    .col{width:32px}
     .tube{height:180px}
   }
 </style>
@@ -181,15 +185,23 @@ with st.sidebar:
                 save(d)
                 st.success("インポート完了。画面を再読み込みしてください。")
 
-# -------------------- 可視化：|||| の横並び（ラベル付・コンパクト） --------------------
+# -------------------- 可視化：|||| の横並び（ラベルずれ補正済み） --------------------
 st.markdown("#### 進捗ボード")
+
+# 表示はリニア固定。非ゼロ棒の最小高さだけ与える。
+MIN_NONZERO_PCT = 15  # %
 
 max_count = max(1, int(max(d["counts"].values())))  # 0除算回避
 
 parts: List[str] = ["<div class='hbars'>"]
 for t in TOPICS:
     v = int(d["counts"].get(t, 0))
-    pct = 0 if max_count == 0 else int(v / max_count * 100)
+    if v <= 0:
+        pct = 0
+    else:
+        pct = v / max_count * 100.0
+        pct = max(pct, float(MIN_NONZERO_PCT))  # 非ゼロの下限
+
     color = COLOR[t]
     short = SHORT[t]
     parts.append(
